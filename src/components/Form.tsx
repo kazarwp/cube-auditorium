@@ -1,4 +1,4 @@
-import { DateInput } from "@mantine/dates";
+import { DateInput, DateValue } from "@mantine/dates";
 import {
   Title,
   Input,
@@ -17,14 +17,22 @@ import {
   getFreeRoom,
 } from "../api/api";
 
+interface IdEquipment {
+  value: string;
+  label: string;
+}
+
 export const Form: React.FC = () => {
   const [watchedValueLesson, setWatchedValueLesson] = useState(false);
   const [watchedValueAddInfo, setWatchedValueAddInfo] = useState(false);
-  const [dataFaculty, setDataFalucly] = useState<string[]>();
-  const [dataEquipment, setDataEquipment] = useState<string[]>();
-  const [idFaculty, setIdFaculty] = useState<number>();
-  const [idEquipment, setIdEquipment] = useState<number>();
+  const [dataFaculty, setDataFalucly] = useState<IData>();
+  const [dataEquipment, setDataEquipment] = useState<IEquipment>();
+  const [idFaculty, setIdFaculty] = useState<string[]>();
+  const [idEquipment, setIdEquipment] = useState<string[]>();
   const [freeRooms, setFreeRoom] = useState<IClassroom>();
+  const [valueDate, setValueDate] = useState<Date | null>();
+  const [valueNumber, setValueNumber] = useState<string | number>();
+  const [valueSize, setValueSize] = useState<string | number>();
   const [valueFaculty, setValueFaculty] = useState<string[]>([]);
   const [valueEquipment, setValueEquipment] = useState<string[]>([]);
 
@@ -32,10 +40,7 @@ export const Form: React.FC = () => {
     const allFacultyFromApi = async () => {
       try {
         const responseData = await getAllFaculty();
-        const shortNameFaculty: string[] = responseData.map(
-          (item: IData) => item.short_name
-        );
-        setDataFalucly(shortNameFaculty);
+        setDataFalucly(responseData);
       } catch (err) {
         console.log(err);
       }
@@ -47,10 +52,7 @@ export const Form: React.FC = () => {
     const allEquipmentFromApi = async () => {
       try {
         const responseEquipment = await getAllEquipment();
-        const nameEquipment: string[] = responseEquipment.map(
-          (item: IEquipment) => item.name
-        );
-        setDataEquipment(nameEquipment);
+        setDataEquipment(responseEquipment);
       } catch (err) {
         console.log(err);
       }
@@ -58,34 +60,41 @@ export const Form: React.FC = () => {
     allEquipmentFromApi();
   }, []);
 
-  const freeRoom = async () => {
+  const dateLesson = (date: DateValue) => {
+    setValueDate(date);
+    return valueDate?.toISOString().substring(0, 10);
+  };
+
+  const freeRoom = async (
+    dateString: (date: DateValue) => string,
+    numberParam: number,
+    toNumberId: (arr: string[]) => number[],
+    toNumberIdData: (arr: string[]) => number[],
+    anotherNumberParam: number
+  ) => {
     try {
-      const responseRoom = await getFreeRoom();
+      const responseRoom = await getFreeRoom(
+        dateString,
+        numberParam,
+        toNumberId,
+        toNumberIdData,
+        anotherNumberParam
+      );
       console.log(responseRoom);
     } catch (err) {
       console.log(err);
     }
   };
-  
-  const currentFaculty = async (namesFaculty: string[]) => {
-    try {
-      namesFaculty.map(async (item) => {
-        const responseCurrentFaculty = await getFaculty(item);
-        return responseCurrentFaculty[0].id;
+
+  const toNumberIdData = (data: string[] | undefined) => {
+    if (data) {
+      const arr = data.map((item) => {
+        return Number(item);
       });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  currentFaculty(["ФМиКН", "БФ", "ФЖ"]);
-
-  const currentEquipment = async (name: string) => {
-    try {
-      const responseCurrentEquipment = await getEquipment(name);
-      setIdEquipment(responseCurrentEquipment[0].id);
-    } catch (err) {
-      console.log(err);
+      return arr;
+    } else {
+      // Обработка случая, когда data не определен
+      return [];
     }
   };
 
@@ -101,13 +110,17 @@ export const Form: React.FC = () => {
         Поиск свободной аудитории
       </Title>
       <DateInput
-        onChange={() => setWatchedValueLesson(true)}
+        onChange={(dateString: DateValue) => {
+          setWatchedValueLesson(true);
+          dateLesson(dateString);
+        }}
         valueFormat="YYYY-MM-DD"
         label="Дата"
         placeholder="Введите дату"
         w={252}
         withAsterisk
         mb={20}
+        value={valueDate}
         labelProps={{
           style: {
             marginBottom: "20px",
@@ -119,10 +132,15 @@ export const Form: React.FC = () => {
       />
       {watchedValueLesson && (
         <Input.Wrapper label="Номер занятия" withAsterisk mb={20}>
-          <Input
+          <NumberInput
             w={252}
             placeholder="Выберите номер занятия"
-            onChange={() => setWatchedValueAddInfo(true)}
+            value={valueNumber}
+            onChange={(value: string | number) => {
+              setWatchedValueAddInfo(true);
+              setValueNumber(Number(value));
+            }}
+            hideControls
           />
         </Input.Wrapper>
       )}
@@ -133,33 +151,53 @@ export const Form: React.FC = () => {
           w={252}
           withAsterisk
           mb={20}
+          value={valueSize}
+          onChange={setValueSize}
         />
       )}
       {watchedValueAddInfo && (
         <MultiSelect
           w={252}
-          data={dataEquipment}
+          data={dataEquipment?.map(({ id, name }) => ({
+            value: String(id),
+            label: name,
+          })) || []}
           label="Желаемое оборудование"
           placeholder="Выберите желаемое оборудование"
           withAsterisk
           mb={20}
-          value={valueEquipment}
-          onChange={setValueEquipment}
+          value={idEquipment}
+          onChange={setIdEquipment}
         />
       )}
       {watchedValueAddInfo && (
         <MultiSelect
           w={252}
-          data={dataFaculty}
+          data={dataFaculty?.map(({ id, short_name }) => ({
+            value: String(id),
+            label: short_name,
+          }))}
           label="Желаемые факультеты"
           placeholder="Выберите желаемые факультеты"
           withAsterisk
+          value={idFaculty}
+          onChange={setIdFaculty}
           mb={10}
-          value={valueFaculty}
-          onChange={setValueFaculty}
         />
       )}
-      <Button className="button" w={133}>
+      <Button
+        className="button"
+        w={133}
+        onClick={() =>
+          freeRoom(
+            dateLesson(valueDate),
+            valueNumber,
+            toNumberIdData(idFaculty),
+            toNumberIdData(idEquipment),
+            valueSize
+          )
+        }
+      >
         Найти
       </Button>
     </Flex>
