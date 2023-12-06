@@ -1,40 +1,49 @@
-import { Card, Group, Text, Image, Flex, Title, ScrollArea } from "@mantine/core";
-import faculty from "../images/faculty.svg";
-import size from "../images/size.svg";
+import {
+  Card,
+  Group,
+  Text,
+  Image,
+  Flex,
+} from "@mantine/core";
+import facultyimg from "../images/facultyimg.svg";
+import sizeimg from "../images/sizeimg.svg";
 import { InfoMenu } from "./InfoMenu";
+import { IClassroom } from "../interface/interface";
 
-export const CardRoom = () => {
+export const CardRoom = ({ classroom }: { classroom: IClassroom }) => {
+
   return (
-    <ScrollArea>
-      <Flex
-        gap="xs"
-        justify="flex-start"
-        align="flex-start"
-        direction="column"
-        wrap="wrap"
-      >
-        <Title order={4} mb={20}>
-          Результат
-        </Title>
-        <Card w={400} withBorder radius={6} h={46} pt={10}>
-          <Group justify="space-between">
-            <Group justify="space-between" gap={50}>
-              <Text size="14px">308Н</Text>
-              <Group gap="5px">
-                <Image src={faculty} />
-                <Text>ФMиКН</Text>
-              </Group>
-              <Group gap="5px">
-                <Image src={size} />
-                <Text>90</Text>
-              </Group>
+    <Flex
+      gap="xs"
+      justify="flex-start"
+      align="flex-start"
+      direction="column"
+      wrap="wrap"
+    >
+      <Card w={400} withBorder radius={6} h={46} pt={10} mb={10} bg="blue">
+        <Group spacing={90}>
+          <Group spacing={15}>
+            <Text size="14px" w={40}>
+              {classroom.name !== null ? classroom.name : "-"}
+            </Text>
+            <Group spacing={5} w={100}>
+              <Image src={facultyimg} width={15} />
+              <Text c="black">
+                {classroom.faculty !== null
+                  ? classroom.faculty?.short_name
+                  : "-"}
+              </Text>
             </Group>
-            <Group>
-              <InfoMenu />
+            <Group spacing={5} w={45}>
+              <Image src={sizeimg} width={15} />
+              <Text>{classroom.size !== null ? classroom.size : "-"}</Text>
             </Group>
           </Group>
-        </Card>
-      </Flex>
-    </ScrollArea>
+          <Group>
+            <InfoMenu equipments={classroom.equipments}/>
+          </Group>
+        </Group>
+      </Card>
+    </Flex>
   );
 };

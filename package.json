@@ -10,10 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "^7.1.7",
-    "@mantine/dates": "^7.1.7",
-    "@mantine/form": "^7.1.7",
-    "@mantine/hooks": "^7.1.7",
+    "@mantine/core": "^6.0.11",
+    "@mantine/dates": "^6.0.11",
+    "@mantine/form": "^6.0.11",
+    "@mantine/hooks": "^6.0.11",
     "dayjs": "^1.11.10",
     "qs": "^6.11.2",
     "react": "^18.2.0",
