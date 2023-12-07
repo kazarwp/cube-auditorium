@@ -11,7 +11,6 @@ import { InfoMenu } from "./InfoMenu";
 import { IClassroom } from "../interface/interface";
 
 export const CardRoom = ({ classroom }: { classroom: IClassroom }) => {
-
   return (
     <Flex
       gap="xs"
@@ -20,8 +19,8 @@ export const CardRoom = ({ classroom }: { classroom: IClassroom }) => {
       direction="column"
       wrap="wrap"
     >
-      <Card w={400} withBorder radius={6} h={46} pt={10} mb={10} bg="blue">
-        <Group spacing={90}>
+      <Card w={400} withBorder radius={6} h={46} pt={10} mb={10}>
+        <Group spacing={110}>
           <Group spacing={15}>
             <Text size="14px" w={40}>
               {classroom.name !== null ? classroom.name : "-"}

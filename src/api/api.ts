@@ -2,10 +2,14 @@ import axios, { AxiosResponse } from "axios";
 import { IData, IEquipment, IClassroom } from "../interface/interface";
 import qs from 'qs';
 
+const API_GET_FACULTY = import.meta.env.VITE_GET_FACULTY
+const API_GET_EQUIPMENT = import.meta.env.VITE_GET_EQUIPMENT
+const API_GET_FREE_ROOMS = import.meta.env.VITE_GET_FREE_ROOMS
+
 export const getAllFaculty = async () => {
   try {
     const allData: AxiosResponse<IData> = await axios({
-      url: "https://0ee3-85-172-29-2.ngrok-free.app/api/faculties/selection",
+      url: API_GET_FACULTY,
       headers: {
         "ngrok-skip-browser-warning": "69420",
       },
@@ -20,7 +24,7 @@ export const getAllFaculty = async () => {
 export const getAllEquipment = async () => {
   try {
     const allEquipment: AxiosResponse<IEquipment> = await axios({
-      url: "https://0ee3-85-172-29-2.ngrok-free.app/api/equipments/selection",
+      url: API_GET_EQUIPMENT,
       headers: {
         "ngrok-skip-browser-warning": "69420",
       },
@@ -34,7 +38,7 @@ export const getAllEquipment = async () => {
 export const getFaculty = async (name: string) => {
   try {
     const getCurrentFaculty: AxiosResponse<IData[]> = await axios({
-      url: "https://0ee3-85-172-29-2.ngrok-free.app/api/faculties/selection",
+      url: API_GET_FACULTY,
       headers: {
         "ngrok-skip-browser-warning": "69420",
       },
@@ -51,7 +55,7 @@ export const getFaculty = async (name: string) => {
 export const getEquipment = async (name: string) => {
   try {
     const getCurrentEquipment: AxiosResponse<IEquipment[]> = await axios({
-      url: "https://0ee3-85-172-29-2.ngrok-free.app/api/equipments/selection",
+      url: API_GET_EQUIPMENT,
       headers: {
         "ngrok-skip-browser-warning": "69420",
       },
@@ -65,14 +69,14 @@ export const getEquipment = async (name: string) => {
   }
 };
 
-export const getFreeRoom = async (dateString: string,
+export const getFreeRooms = async (dateString: string,
   numberParam: number,
   stringToNumberFunc: number[],
   anotherStringToNumberFunc: number[],
   anotherNumberParam: number) => {
   try {
     const getFreeRooms: AxiosResponse<IClassroom> = await axios({
-      url: "https://0ee3-85-172-29-2.ngrok-free.app/api/timetable/places/free",
+      url: API_GET_FREE_ROOMS,
       headers: {
         "ngrok-skip-browser-warning": "69420",
       },

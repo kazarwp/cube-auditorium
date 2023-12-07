@@ -2,14 +2,13 @@ import {
   Image,
   Text,
   Popover,
-  Button,
   Title,
-  Paper,
-  Flex,
+  UnstyledButton,
 } from "@mantine/core";
+
 import info from "../images/info.svg";
-import "../style/InfoRoom.css";
-import { IClassroom } from "../interface/interface";
+
+import "./InfoMenu.css";
 
 interface InfoMenuProps {
   equipments: {
@@ -21,13 +20,13 @@ interface InfoMenuProps {
   }[];
 }
 
-export const InfoMenu: React.FC = ({ equipments }: {equipments: InfoMenuProps}) => {
+export const InfoMenu = ({ equipments }: {equipments: InfoMenuProps}) => {
   return (
     <Popover position="bottom" withArrow shadow="md" withinPortal width={125}>
       <Popover.Target>
-        <Button h={24}>
+        <UnstyledButton h={24}>
           <Image src={info} />
-        </Button>
+        </UnstyledButton>
       </Popover.Target>
       <Popover.Dropdown>
         <Title size={10} c="#969696" weight={500} mb={10}>

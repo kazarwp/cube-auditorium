@@ -10,23 +10,17 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
+
 import { WithoutDataCard } from "./WithoutDataCard";
 import { IClassroom, IData, IEquipment } from "../interface/interface";
 import {
   getAllFaculty,
   getAllEquipment,
-  getFaculty,
-  getEquipment,
-  getFreeRoom,
+  getFreeRooms,
 } from "../api/api";
 import { CardRoom } from "./CardRoom";
 
-interface IdEquipment {
-  value: string;
-  label: string;
-}
-
-export const Form: React.FC = () => {
+export const Form = () => {
   const [watchedValueLesson, setWatchedValueLesson] = useState(false);
   const [watchedValueAddInfo, setWatchedValueAddInfo] = useState(false);
   const [dataFaculty, setDataFalucly] = useState<IData>();
@@ -37,8 +31,6 @@ export const Form: React.FC = () => {
   const [valueDate, setValueDate] = useState<Date | null>();
   const [valueNumber, setValueNumber] = useState<string | number>();
   const [valueSize, setValueSize] = useState<string | number>();
-  const [valueFaculty, setValueFaculty] = useState<string[]>([]);
-  const [valueEquipment, setValueEquipment] = useState<string[]>([]);
 
   useEffect(() => {
     const allFacultyFromApi = async () => {
@@ -51,7 +43,6 @@ export const Form: React.FC = () => {
     };
     allFacultyFromApi();
   }, []);
-
   useEffect(() => {
     const allEquipmentFromApi = async () => {
       try {
@@ -66,7 +57,6 @@ export const Form: React.FC = () => {
 
   const dateLesson = (date: DateValue) => {
     setValueDate(date);
-    console.log(valueDate?.toISOString().substring(0, 10))
     return valueDate?.toISOString().substring(0, 10);
   };
 
@@ -78,7 +68,7 @@ export const Form: React.FC = () => {
     anotherNumberParam: number
   ) => {
     try {
-      const responseRoom = await getFreeRoom(
+      const responseRoom = await getFreeRooms(
         dateString,
         numberParam,
         toNumberId,
@@ -102,7 +92,7 @@ export const Form: React.FC = () => {
       return [];
     }
   };
-  console.log(freeRooms);
+ 
   return (
     <Grid justify="space-around" align="flex-start">
       <Flex

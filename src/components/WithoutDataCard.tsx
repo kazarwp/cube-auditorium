@@ -1,4 +1,4 @@
-import { Card, Text, Badge  } from "@mantine/core";
+import { Card, Badge  } from "@mantine/core";
 
 export const WithoutDataCard = () => {
   return (

@@ -1,9 +1,11 @@
 import { Button } from '@mantine/core';
-import '../style/Button.css'
-import { getIdFaculty } from '../api/api';
 import { useEffect } from 'react';
 
-export const ButtonSearch: React.FC = () => {
+import { getIdFaculty } from '../api/api';
+
+import './ButtonSearch.css'
+
+export const ButtonSearch = () => {
   useEffect(() => {
     getIdFaculty()
   }, [])
