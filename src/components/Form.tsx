@@ -43,6 +43,7 @@ export const Form = () => {
     };
     allFacultyFromApi();
   }, []);
+
   useEffect(() => {
     const allEquipmentFromApi = async () => {
       try {
@@ -149,6 +150,8 @@ export const Form = () => {
             mb={20}
             value={valueSize}
             onChange={setValueSize}
+            max={100}
+            min={1}
           />
         )}
         {watchedValueAddInfo && (
