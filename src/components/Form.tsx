@@ -13,12 +13,9 @@ import { useEffect, useState } from "react";
 
 import { WithoutDataCard } from "./WithoutDataCard";
 import { IClassroom, IData, IEquipment } from "../interface/interface";
-import {
-  getAllFaculty,
-  getAllEquipment,
-  getFreeRooms,
-} from "../api/api";
+import { getAllFaculty, getAllEquipment, getFreeRooms } from "../api/api";
 import { CardRoom } from "./CardRoom";
+import { NotFoundRooms } from "./NotFoundRooms";
 
 export const Form = () => {
   const [watchedValueLesson, setWatchedValueLesson] = useState(false);
@@ -27,10 +24,10 @@ export const Form = () => {
   const [dataEquipment, setDataEquipment] = useState<IEquipment>();
   const [idFaculty, setIdFaculty] = useState<string[]>();
   const [idEquipment, setIdEquipment] = useState<string[]>();
-  const [freeRooms, setFreeRoom] = useState<IClassroom[] | undefined>();
+  const [freeRooms, setFreeRoom] = useState<IClassroom[]>();
   const [valueDate, setValueDate] = useState<Date | null>();
-  const [valueNumber, setValueNumber] = useState<string | number>();
-  const [valueSize, setValueSize] = useState<string | number>();
+  const [valueNumber, setValueNumber] = useState<number>();
+  const [valueSize, setValueSize] = useState<number | "">();
 
   useEffect(() => {
     const allFacultyFromApi = async () => {
@@ -93,7 +90,7 @@ export const Form = () => {
       return [];
     }
   };
- 
+
   return (
     <Grid justify="space-around" align="flex-start">
       <Flex
@@ -113,7 +110,7 @@ export const Form = () => {
           }}
           valueFormat="YYYY-MM-DD"
           label="Дата"
-          minDate={new Date}
+          minDate={new Date()}
           placeholder="Введите дату"
           w={252}
           withAsterisk
@@ -207,8 +204,10 @@ export const Form = () => {
           </Title>
           {freeRooms === undefined ? (
             <WithoutDataCard />
+          ) : freeRooms.length === 0 ? (
+            <NotFoundRooms />
           ) : (
-            freeRooms.map((classroom) => (
+            freeRooms.map((classroom: IClassroom) => (
               <CardRoom key={classroom.id} classroom={classroom} />
             ))
           )}
