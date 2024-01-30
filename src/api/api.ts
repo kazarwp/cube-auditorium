@@ -14,7 +14,6 @@ export const getAllFaculty = async () => {
         "ngrok-skip-browser-warning": "69420",
       },
     });
-    console.log()
     return allData.data;
   } catch (error) {
     throw new Error("Fail");

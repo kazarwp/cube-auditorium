@@ -1,5 +1,6 @@
 import { DateInput, DateValue } from "@mantine/dates";
 import {
+  Box,
   Title,
   Input,
   NumberInput,
@@ -16,6 +17,7 @@ import { IClassroom, IData, IEquipment } from "../interface/interface";
 import { getAllFaculty, getAllEquipment, getFreeRooms } from "../api/api";
 import { CardRoom } from "./CardRoom";
 import { NotFoundRooms } from "./NotFoundRooms";
+import { Icon } from "../components/Icon";
 
 export const Form = () => {
   const [watchedValueLesson, setWatchedValueLesson] = useState(false);
@@ -93,126 +95,128 @@ export const Form = () => {
 
   return (
     <Grid justify="space-around" align="flex-start">
-      <Flex
-        gap="xs"
-        justify="flex-start"
-        align="center"
-        direction="column"
-        wrap="wrap"
-      >
-        <Title order={4} mb={20}>
-          Поиск свободной аудитории
-        </Title>
-        <DateInput
-          onChange={(dateString: DateValue) => {
-            setWatchedValueLesson(true);
-            dateLesson(dateString);
-          }}
-          valueFormat="YYYY-MM-DD"
-          label="Дата"
-          minDate={new Date()}
-          placeholder="Введите дату"
-          w={252}
-          withAsterisk
-          mb={20}
-          value={valueDate}
-          labelProps={{
-            style: {
-              marginBottom: "20px",
-              fontWeight: "bold",
-              color: "#333",
-              fontSize: "18px",
-            },
-          }}
-        />
-        {watchedValueLesson && (
-          <Input.Wrapper label="Номер занятия" withAsterisk mb={20}>
-            <NumberInput
-              w={252}
-              placeholder="Выберите номер занятия"
-              value={valueNumber}
-              onChange={(value: string | number) => {
-                setWatchedValueAddInfo(true);
-                setValueNumber(Number(value));
-              }}
-              hideControls
-            />
-          </Input.Wrapper>
-        )}
-        {watchedValueAddInfo && (
-          <NumberInput
-            label="Минимальная вместимость"
-            placeholder="Введите желаемое кол-во мест"
-            w={252}
-            mb={20}
-            value={valueSize}
-            onChange={setValueSize}
-            max={100}
-            min={1}
-          />
-        )}
-        {watchedValueAddInfo && (
-          <MultiSelect
-            w={252}
-            data={
-              dataEquipment?.map(({ id, name }) => ({
-                value: String(id),
-                label: name,
-              })) || []
-            }
-            label="Желаемое оборудование"
-            placeholder="Выберите желаемое оборудование"
-            mb={20}
-            value={idEquipment}
-            onChange={setIdEquipment}
-          />
-        )}
-        {watchedValueAddInfo && (
-          <MultiSelect
-            w={252}
-            data={dataFaculty?.map(({ id, short_name }) => ({
-              value: String(id),
-              label: short_name,
-            }))}
-            label="Желаемые факультеты"
-            placeholder="Выберите желаемые факультеты"
-            value={idFaculty}
-            onChange={setIdFaculty}
-            mb={10}
-          />
-        )}
-        <Button
-          className="button"
-          w={133}
-          onClick={() =>
-            freeRoom(
-              dateLesson(valueDate),
-              valueNumber,
-              toNumberIdData(idFaculty),
-              toNumberIdData(idEquipment),
-              valueSize
-            )
-          }
+      
+        <Flex
+          gap="xs"
+          justify="flex-start"
+          align="center"
+          direction="column"
+          wrap="wrap"
         >
-          Найти
-        </Button>
-      </Flex>
-      <div>
-        <ScrollArea h={500}>
+          <Icon />
+          <Title order={4} mb={20}>
+            Поиск свободной аудитории
+          </Title>
+          <DateInput
+            onChange={(dateString: DateValue) => {
+              setWatchedValueLesson(true);
+              dateLesson(dateString);
+            }}
+            valueFormat="YYYY-MM-DD"
+            label="Дата"
+            minDate={new Date()}
+            placeholder="Введите дату"
+            w={252}
+            withAsterisk
+            mb={20}
+            value={valueDate}
+            labelProps={{
+              style: {
+                marginBottom: "20px",
+                fontWeight: "bold",
+                color: "#333",
+                fontSize: "18px",
+              },
+            }}
+          />
+          {watchedValueLesson && (
+            <Input.Wrapper label="Номер занятия" withAsterisk mb={20}>
+              <NumberInput
+                w={252}
+                placeholder="Выберите номер занятия"
+                value={valueNumber}
+                onChange={(value: string | number) => {
+                  setWatchedValueAddInfo(true);
+                  setValueNumber(Number(value));
+                }}
+                hideControls
+              />
+            </Input.Wrapper>
+          )}
+          {watchedValueAddInfo && (
+            <NumberInput
+              label="Минимальная вместимость"
+              placeholder="Введите желаемое кол-во мест"
+              w={252}
+              mb={20}
+              value={valueSize}
+              onChange={setValueSize}
+              max={100}
+              min={1}
+            />
+          )}
+          {watchedValueAddInfo && (
+            <MultiSelect
+              w={252}
+              data={
+                dataEquipment?.map(({ id, name }) => ({
+                  value: String(id),
+                  label: name,
+                })) || []
+              }
+              label="Желаемое оборудование"
+              placeholder="Выберите желаемое оборудование"
+              mb={20}
+              value={idEquipment}
+              onChange={setIdEquipment}
+            />
+          )}
+          {watchedValueAddInfo && (
+            <MultiSelect
+              w={252}
+              data={dataFaculty?.map(({ id, short_name }) => ({
+                value: String(id),
+                label: short_name,
+              }))}
+              label="Желаемые факультеты"
+              placeholder="Выберите желаемые факультеты"
+              value={idFaculty}
+              onChange={setIdFaculty}
+              mb={10}
+            />
+          )}
+          <Button
+            className="button"
+            w={133}
+            onClick={() =>
+              freeRoom(
+                dateLesson(valueDate),
+                valueNumber,
+                toNumberIdData(idFaculty),
+                toNumberIdData(idEquipment),
+                valueSize
+              )
+            }
+          >
+            Найти
+          </Button>
+        </Flex>
+        <Box mt={300}> 
           <Title order={4} mb={20}>
             Результат
           </Title>
-          {freeRooms === undefined ? (
-            <WithoutDataCard />
-          ) : freeRooms.length === 0 ? (
-            <NotFoundRooms />
-          ) : (
-            freeRooms.map((classroom: IClassroom) => (
-              <CardRoom key={classroom.id} classroom={classroom} />
-            ))
-          )}
-        </ScrollArea>
-      </div>
+          <ScrollArea h={500}>
+            {freeRooms === undefined ? (
+              <WithoutDataCard />
+            ) : freeRooms.length === 0 ? (
+              <NotFoundRooms />
+            ) : (
+              freeRooms.map((classroom: IClassroom) => (
+                <CardRoom key={classroom.id} classroom={classroom} />
+              ))
+            )}
+          </ScrollArea>
+        </Box>
     </Grid>
   );
 };
