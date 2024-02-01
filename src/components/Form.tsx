@@ -19,11 +19,21 @@ import { CardRoom } from "./CardRoom";
 import { NotFoundRooms } from "./NotFoundRooms";
 import { Icon } from "../components/Icon";
 
+interface IMappedEquipment {
+  value: string;
+  label: string;
+}
+
+interface IMappedFaculty {
+  value: string;
+  label: string;
+}
+
 export const Form = () => {
   const [watchedValueLesson, setWatchedValueLesson] = useState(false);
   const [watchedValueAddInfo, setWatchedValueAddInfo] = useState(false);
-  const [dataFaculty, setDataFalucly] = useState<IData>();
-  const [dataEquipment, setDataEquipment] = useState<IEquipment>();
+  const [dataFaculty, setDataFalucly] = useState<IData[]>([]);
+  const [dataEquipment, setDataEquipment] = useState<IEquipment[]>();
   const [idFaculty, setIdFaculty] = useState<string[]>();
   const [idEquipment, setIdEquipment] = useState<string[]>();
   const [freeRooms, setFreeRoom] = useState<IClassroom[]>();
@@ -31,6 +41,16 @@ export const Form = () => {
   const [valueNumber, setValueNumber] = useState<number>();
   const [valueSize, setValueSize] = useState<number | "">();
 
+  const mappedFaculty: IMappedFaculty[] = dataFaculty?.map(({ id, short_name }) => ({
+    value: String(id),
+    label: short_name,
+  }))
+
+  const mappedEquipment: IMappedEquipment[] = dataEquipment?.map(({ id, name }) => ({
+    value: String(id),
+    label: name,
+  })) || [];
+  
   useEffect(() => {
     const allFacultyFromApi = async () => {
       try {
@@ -95,128 +115,119 @@ export const Form = () => {
 
   return (
     <Grid justify="space-around" align="flex-start">
-      
-        <Flex
-          gap="xs"
-          justify="flex-start"
-          align="center"
-          direction="column"
-          wrap="wrap"
-        >
-          <Icon />
-          <Title order={4} mb={20}>
-            Поиск свободной аудитории
-          </Title>
-          <DateInput
-            onChange={(dateString: DateValue) => {
-              setWatchedValueLesson(true);
-              dateLesson(dateString);
-            }}
-            valueFormat="YYYY-MM-DD"
-            label="Дата"
-            minDate={new Date()}
-            placeholder="Введите дату"
-            w={252}
-            withAsterisk
-            mb={20}
-            value={valueDate}
-            labelProps={{
-              style: {
-                marginBottom: "20px",
-                fontWeight: "bold",
-                color: "#333",
-                fontSize: "18px",
-              },
-            }}
-          />
-          {watchedValueLesson && (
-            <Input.Wrapper label="Номер занятия" withAsterisk mb={20}>
-              <NumberInput
-                w={252}
-                placeholder="Выберите номер занятия"
-                value={valueNumber}
-                onChange={(value: string | number) => {
-                  setWatchedValueAddInfo(true);
-                  setValueNumber(Number(value));
-                }}
-                hideControls
-              />
-            </Input.Wrapper>
-          )}
-          {watchedValueAddInfo && (
+      <Flex
+        gap="xs"
+        justify="flex-start"
+        align="center"
+        direction="column"
+        wrap="wrap"
+      >
+        <Icon />
+        <Title order={4} mb={20}>
+          Поиск свободной аудитории
+        </Title>
+        <DateInput
+          onChange={(dateString: DateValue) => {
+            setWatchedValueLesson(true);
+            dateLesson(dateString);
+          }}
+          valueFormat="YYYY-MM-DD"
+          label="Дата"
+          minDate={new Date()}
+          placeholder="Введите дату"
+          w={252}
+          withAsterisk
+          mb={20}
+          value={valueDate}
+          labelProps={{
+            style: {
+              marginBottom: "20px",
+              fontWeight: "bold",
+              color: "#333",
+              fontSize: "18px",
+            },
+          }}
+        />
+        {watchedValueLesson && (
+          <Input.Wrapper label="Номер занятия" withAsterisk mb={20}>
             <NumberInput
-              label="Минимальная вместимость"
-              placeholder="Введите желаемое кол-во мест"
               w={252}
-              mb={20}
-              value={valueSize}
-              onChange={setValueSize}
-              max={100}
-              min={1}
+              placeholder="Выберите номер занятия"
+              value={valueNumber}
+              onChange={(value: string | number) => {
+                setWatchedValueAddInfo(true);
+                setValueNumber(Number(value));
+              }}
+              hideControls
             />
+          </Input.Wrapper>
+        )}
+        {watchedValueAddInfo && (
+          <NumberInput
+            label="Минимальная вместимость"
+            placeholder="Введите желаемое кол-во мест"
+            w={252}
+            mb={20}
+            value={valueSize}
+            onChange={setValueSize}
+            max={100}
+            min={1}
+          />
+        )}
+        {watchedValueAddInfo && (
+          <MultiSelect
+            w={252}
+            data={mappedEquipment}
+            label="Желаемое оборудование"
+            placeholder="Выберите желаемое оборудование"
+            mb={20}
+            value={idEquipment}
+            onChange={setIdEquipment}
+          />
+        )}
+        {watchedValueAddInfo && (
+          <MultiSelect
+            w={252}
+            data={mappedFaculty}
+            label="Желаемые факультеты"
+            placeholder="Выберите желаемые факультеты"
+            value={idFaculty}
+            onChange={setIdFaculty}
+            mb={10}
+          />
+        )}
+        <Button
+          className="button"
+          w={133}
+          onClick={() =>
+            freeRoom(
+              dateLesson(valueDate),
+              valueNumber,
+              toNumberIdData(idFaculty),
+              toNumberIdData(idEquipment),
+              valueSize
+            )
+          }
+        >
+          Найти
+        </Button>
+      </Flex>
+      <Box mt={300}>
+        <Title order={4} mb={20}>
+          Результат
+        </Title>
+        <ScrollArea h={500}>
+          {freeRooms === undefined ? (
+            <WithoutDataCard />
+          ) : freeRooms.length === 0 ? (
+            <NotFoundRooms />
+          ) : (
+            freeRooms.map((classroom: IClassroom) => (
+              <CardRoom key={classroom.id} classroom={classroom} />
+            ))
           )}
-          {watchedValueAddInfo && (
-            <MultiSelect
-              w={252}
-              data={
-                dataEquipment?.map(({ id, name }) => ({
-                  value: String(id),
-                  label: name,
-                })) || []
-              }
-              label="Желаемое оборудование"
-              placeholder="Выберите желаемое оборудование"
-              mb={20}
-              value={idEquipment}
-              onChange={setIdEquipment}
-            />
-          )}
-          {watchedValueAddInfo && (
-            <MultiSelect
-              w={252}
-              data={dataFaculty?.map(({ id, short_name }) => ({
-                value: String(id),
-                label: short_name,
-              }))}
-              label="Желаемые факультеты"
-              placeholder="Выберите желаемые факультеты"
-              value={idFaculty}
-              onChange={setIdFaculty}
-              mb={10}
-            />
-          )}
-          <Button
-            className="button"
-            w={133}
-            onClick={() =>
-              freeRoom(
-                dateLesson(valueDate),
-                valueNumber,
-                toNumberIdData(idFaculty),
-                toNumberIdData(idEquipment),
-                valueSize
-              )
-            }
-          >
-            Найти
-          </Button>
-        </Flex>
-        <Box mt={300}> 
-          <Title order={4} mb={20}>
-            Результат
-          </Title>
-          <ScrollArea h={500}>
-            {freeRooms === undefined ? (
-              <WithoutDataCard />
-            ) : freeRooms.length === 0 ? (
-              <NotFoundRooms />
-            ) : (
-              freeRooms.map((classroom: IClassroom) => (
-                <CardRoom key={classroom.id} classroom={classroom} />
-              ))
-            )}
-          </ScrollArea>
-        </Box>
+        </ScrollArea>
+      </Box>
     </Grid>
   );
 };

@@ -1,6 +1,4 @@
 export interface IData {
-  map(arg0: (item: IData) => string): string[];
-  map(arg0: (item: IData) => number): number[];
   id: number;
   inactive: boolean;
   name: string;
@@ -8,7 +6,6 @@ export interface IData {
 }
 
 export interface IEquipment {
-  map(arg0: (item: IData) => string): string[];
   id: number;
   name: string;
 }
