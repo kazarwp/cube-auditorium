@@ -8,7 +8,7 @@ const API_GET_FREE_ROOMS = import.meta.env.VITE_GET_FREE_ROOMS
 
 export const getAllFaculty = async () => {
   try {
-    const allData: AxiosResponse<IData> = await axios({
+    const allData: AxiosResponse<IData[]> = await axios({
       url: API_GET_FACULTY,
       headers: {
         "ngrok-skip-browser-warning": "69420",
@@ -22,7 +22,7 @@ export const getAllFaculty = async () => {
 
 export const getAllEquipment = async () => {
   try {
-    const allEquipment: AxiosResponse<IEquipment> = await axios({
+    const allEquipment: AxiosResponse<IEquipment[]> = await axios({
       url: API_GET_EQUIPMENT,
       headers: {
         "ngrok-skip-browser-warning": "69420",
@@ -74,7 +74,7 @@ export const getFreeRooms = async (dateString: string,
   anotherStringToNumberFunc: number[],
   anotherNumberParam: number) => {
   try {
-    const getFreeRooms: AxiosResponse<IClassroom> = await axios({
+    const getFreeRooms: AxiosResponse<IClassroom[]> = await axios({
       url: API_GET_FREE_ROOMS,
       headers: {
         "ngrok-skip-browser-warning": "69420",

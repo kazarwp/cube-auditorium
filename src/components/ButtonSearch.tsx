@@ -1,14 +1,11 @@
-import { Button } from '@mantine/core';
-import { useEffect } from 'react';
+import { Button } from "@mantine/core";
 
-import { getIdFaculty } from '../api/api';
-
-import './ButtonSearch.css'
+import "./ButtonSearch.css";
 
 export const ButtonSearch = () => {
-  useEffect(() => {
-    getIdFaculty()
-  }, [])
-
-  return <Button className='button' w={133}>Найти</Button>;
+  return (
+    <Button className="button" w={133}>
+      Найти
+    </Button>
+  );
 };

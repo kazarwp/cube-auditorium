@@ -32,8 +32,8 @@ interface IMappedFaculty {
 export const Form = () => {
   const [watchedValueLesson, setWatchedValueLesson] = useState(false);
   const [watchedValueAddInfo, setWatchedValueAddInfo] = useState(false);
-  const [dataFaculty, setDataFalucly] = useState<IData[]>([]);
-  const [dataEquipment, setDataEquipment] = useState<IEquipment[]>();
+  const [dataFaculty, setDataFaculty] = useState<IData[]>([]);
+  const [dataEquipment, setDataEquipment] = useState<IEquipment[]>([]);
   const [idFaculty, setIdFaculty] = useState<string[]>();
   const [idEquipment, setIdEquipment] = useState<string[]>();
   const [freeRooms, setFreeRoom] = useState<IClassroom[]>();
@@ -41,21 +41,24 @@ export const Form = () => {
   const [valueNumber, setValueNumber] = useState<number>();
   const [valueSize, setValueSize] = useState<number | "">();
 
-  const mappedFaculty: IMappedFaculty[] = dataFaculty?.map(({ id, short_name }) => ({
-    value: String(id),
-    label: short_name,
-  }))
+  const mappedFaculty: IMappedFaculty[] = dataFaculty?.map(
+    ({ id, short_name }) => ({
+      value: String(id),
+      label: short_name,
+    })
+  );
 
-  const mappedEquipment: IMappedEquipment[] = dataEquipment?.map(({ id, name }) => ({
-    value: String(id),
-    label: name,
-  })) || [];
-  
+  const mappedEquipment: IMappedEquipment[] =
+    dataEquipment?.map(({ id, name }) => ({
+      value: String(id),
+      label: name,
+    })) || [];
+
   useEffect(() => {
     const allFacultyFromApi = async () => {
       try {
         const responseData = await getAllFaculty();
-        setDataFalucly(responseData);
+        setDataFaculty(responseData);
       } catch (err) {
         console.log(err);
       }

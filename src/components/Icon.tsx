@@ -6,7 +6,7 @@ import "./Icon.css";
 export const Icon: React.FC = () => {
   return (
     <Box>
-      <Image className='icon' src={icon} width={250} />
+      <Image className="icon" src={icon} width={250} />
     </Box>
   );
 };

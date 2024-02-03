@@ -1,10 +1,4 @@
-import {
-  Card,
-  Group,
-  Text,
-  Image,
-  Flex,
-} from "@mantine/core";
+import { Card, Group, Text, Image, Flex } from "@mantine/core";
 import facultyimg from "../images/facultyimg.svg";
 import sizeimg from "../images/sizeimg.svg";
 import { InfoMenu } from "./InfoMenu";
@@ -39,7 +33,7 @@ export const CardRoom = ({ classroom }: { classroom: IClassroom }) => {
             </Group>
           </Group>
           <Group>
-            <InfoMenu equipments={classroom.equipments}/>
+            <InfoMenu equipments={classroom.equipments} />
           </Group>
         </Group>
       </Card>
