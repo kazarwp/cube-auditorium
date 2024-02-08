@@ -1,4 +1,10 @@
-import { DateInput, DateValue } from "@mantine/dates";
+import {
+  DateInput,
+  DateValue,
+  DatesProvider,
+  DateInputProps,
+  DatePickerInput,
+} from "@mantine/dates";
 import {
   Box,
   Title,
@@ -9,8 +15,12 @@ import {
   Flex,
   Grid,
   ScrollArea,
+  Loader,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
+
+import dayjs from "dayjs";
+import "dayjs/locale/ru";
 
 import { WithoutDataCard } from "./WithoutDataCard";
 import { IClassroom, IData, IEquipment } from "../interface/interface";
@@ -40,6 +50,8 @@ export const Form = () => {
   const [valueDate, setValueDate] = useState<Date | null>();
   const [valueNumber, setValueNumber] = useState<number>();
   const [valueSize, setValueSize] = useState<number | "">();
+  const [disabled, setDisabled] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const mappedFaculty: IMappedFaculty[] = dataFaculty?.map(
     ({ id, short_name }) => ({
@@ -58,13 +70,20 @@ export const Form = () => {
     const allFacultyFromApi = async () => {
       try {
         const responseData = await getAllFaculty();
-        setDataFaculty(responseData);
+        const inactiveControl = responseData.filter(
+          (item) => item.inactive === false
+        );
+        setDataFaculty(inactiveControl);
       } catch (err) {
         console.log(err);
       }
     };
     allFacultyFromApi();
   }, []);
+
+  const dateParser: DateInputProps["dateParser"] = (input) => {
+    return dayjs(input, "DD.MM.YYYY").toDate();
+  };
 
   useEffect(() => {
     const allEquipmentFromApi = async () => {
@@ -99,6 +118,7 @@ export const Form = () => {
         anotherNumberParam
       );
       setFreeRoom(responseRoom);
+      setLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -116,6 +136,15 @@ export const Form = () => {
     }
   };
 
+  useEffect(() => {
+    const disabledButtonSearch = () => {
+      if (valueDate && valueNumber != undefined) {
+        setDisabled(false);
+      }
+    };
+    disabledButtonSearch();
+  }, [valueDate, valueNumber]);
+
   return (
     <Grid justify="space-around" align="flex-start">
       <Flex
@@ -129,39 +158,40 @@ export const Form = () => {
         <Title order={4} mb={20}>
           Поиск свободной аудитории
         </Title>
-        <DateInput
-          onChange={(dateString: DateValue) => {
-            setWatchedValueLesson(true);
-            dateLesson(dateString);
-          }}
-          valueFormat="YYYY-MM-DD"
-          label="Дата"
-          minDate={new Date()}
-          placeholder="Введите дату"
-          w={252}
-          withAsterisk
-          mb={20}
-          value={valueDate}
-          labelProps={{
-            style: {
-              marginBottom: "20px",
-              fontWeight: "bold",
-              color: "#333",
-              fontSize: "18px",
-            },
-          }}
-        />
+        <DatesProvider settings={{ locale: "ru" }}>
+          <DateInput
+            onChange={(dateString: DateValue) => {
+              setWatchedValueLesson(true);
+              dateLesson(dateString);
+            }}
+            valueFormat="DD.MM.YYYY"
+            label="Дата"
+            minDate={new Date()}
+            placeholder="Введите дату"
+            w={252}
+            withAsterisk
+            mb={20}
+            value={valueDate}
+            labelProps={{
+              style: {
+                fontWeight: "bold",
+                color: "#333",
+              },
+            }}
+          />
+        </DatesProvider>
         {watchedValueLesson && (
           <Input.Wrapper label="Номер занятия" withAsterisk mb={20}>
             <NumberInput
               w={252}
+              min={1}
+              max={9}
               placeholder="Выберите номер занятия"
               value={valueNumber}
               onChange={(value: string | number) => {
                 setWatchedValueAddInfo(true);
                 setValueNumber(Number(value));
               }}
-              hideControls
             />
           </Input.Wrapper>
         )}
@@ -200,19 +230,24 @@ export const Form = () => {
           />
         )}
         <Button
+          loading={loading}
+          loaderProps={{ type: "dots" }}
           className="button"
           w={133}
-          onClick={() =>
+          loaderPosition='center'
+          disabled={disabled}
+          onClick={() => {
             freeRoom(
               dateLesson(valueDate),
               valueNumber,
               toNumberIdData(idFaculty),
               toNumberIdData(idEquipment),
               valueSize
-            )
-          }
+            );
+            setLoading(true);
+          }}
         >
-          Найти
+          {!loading ? "Найти" : <Loader />}
         </Button>
       </Flex>
       <Box mt={300}>
