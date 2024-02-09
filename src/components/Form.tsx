@@ -164,6 +164,10 @@ export const Form = () => {
               setWatchedValueLesson(true);
               dateLesson(dateString);
             }}
+            dateParser={(input) => {
+              const parts = input.split(".");
+              return new Date(`${parts[1]}.${parts[0]}.${parts[2]}`);
+            }}
             valueFormat="DD.MM.YYYY"
             label="Дата"
             minDate={new Date()}
@@ -171,6 +175,8 @@ export const Form = () => {
             w={252}
             withAsterisk
             mb={20}
+            maw={400}
+            mx="auto"
             value={valueDate}
             labelProps={{
               style: {
@@ -234,7 +240,7 @@ export const Form = () => {
           loaderProps={{ type: "dots" }}
           className="button"
           w={133}
-          loaderPosition='center'
+          loaderPosition="center"
           disabled={disabled}
           onClick={() => {
             freeRoom(
