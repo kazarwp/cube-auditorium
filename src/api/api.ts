@@ -69,10 +69,10 @@ export const getEquipment = async (name: string) => {
 };
 
 export const getFreeRooms = async (dateString: string,
-  numberParam: number,
-  stringToNumberFunc: number[],
-  anotherStringToNumberFunc: number[],
-  anotherNumberParam: number) => {
+  numberParam: number | undefined,
+  stringToNumberFunc: (arr: string[]) => number[],
+  anotherStringToNumberFunc: (arr: string[]) => number[],
+  anotherNumberParam: number | undefined) => {
   try {
     const getFreeRooms: AxiosResponse<IClassroom[]> = await axios({
       url: API_GET_FREE_ROOMS,

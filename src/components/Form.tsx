@@ -1,10 +1,4 @@
-import {
-  DateInput,
-  DateValue,
-  DatesProvider,
-  DateInputProps,
-  DatePickerInput,
-} from "@mantine/dates";
+import { DateInput, DateValue, DatesProvider } from "@mantine/dates";
 import {
   Box,
   Title,
@@ -19,7 +13,6 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 
-import dayjs from "dayjs";
 import "dayjs/locale/ru";
 
 import { WithoutDataCard } from "./WithoutDataCard";
@@ -53,19 +46,6 @@ export const Form = () => {
   const [disabled, setDisabled] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const mappedFaculty: IMappedFaculty[] = dataFaculty?.map(
-    ({ id, short_name }) => ({
-      value: String(id),
-      label: short_name,
-    })
-  );
-
-  const mappedEquipment: IMappedEquipment[] =
-    dataEquipment?.map(({ id, name }) => ({
-      value: String(id),
-      label: name,
-    })) || [];
-
   useEffect(() => {
     const allFacultyFromApi = async () => {
       try {
@@ -81,10 +61,6 @@ export const Form = () => {
     allFacultyFromApi();
   }, []);
 
-  const dateParser: DateInputProps["dateParser"] = (input) => {
-    return dayjs(input, "DD.MM.YYYY").toDate();
-  };
-
   useEffect(() => {
     const allEquipmentFromApi = async () => {
       try {
@@ -97,21 +73,39 @@ export const Form = () => {
     allEquipmentFromApi();
   }, []);
 
-  const dateLesson = (date: DateValue) => {
+  const mappedFaculty: IMappedFaculty[] = dataFaculty?.map(
+    ({ id, short_name }) => ({
+      value: String(id),
+      label: short_name,
+    })
+  );
+
+  const mappedEquipment: IMappedEquipment[] =
+    dataEquipment?.map(({ id, name }) => ({
+      value: String(id),
+      label: name,
+    })) || [];
+
+  const dateLesson = (date: DateValue | null | undefined): string => {
     setValueDate(date);
-    return valueDate?.toISOString().substring(0, 10);
+    return String(valueDate?.toISOString().substring(0, 10));
+  };
+
+  const dateParse = (input: string) => {
+    const parts = input.split(".");
+    return new Date(`${parts[1]}.${parts[0]}.${parts[2]}`);
   };
 
   const freeRoom = async (
-    dateString: (date: DateValue) => string,
-    numberParam: number,
+    numberParam: number | undefined,
     toNumberId: (arr: string[]) => number[],
     toNumberIdData: (arr: string[]) => number[],
-    anotherNumberParam: number
+    anotherNumberParam: number | undefined
   ) => {
     try {
+      const dateStringParam = dateLesson(valueDate);
       const responseRoom = await getFreeRooms(
-        dateString,
+        dateStringParam,
         numberParam,
         toNumberId,
         toNumberIdData,
@@ -164,10 +158,7 @@ export const Form = () => {
               setWatchedValueLesson(true);
               dateLesson(dateString);
             }}
-            dateParser={(input) => {
-              const parts = input.split(".");
-              return new Date(`${parts[1]}.${parts[0]}.${parts[2]}`);
-            }}
+            dateParser={dateParse}
             valueFormat="DD.MM.YYYY"
             label="Дата"
             minDate={new Date()}
@@ -244,7 +235,6 @@ export const Form = () => {
           disabled={disabled}
           onClick={() => {
             freeRoom(
-              dateLesson(valueDate),
               valueNumber,
               toNumberIdData(idFaculty),
               toNumberIdData(idEquipment),
